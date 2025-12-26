@@ -1,8 +1,8 @@
 {
   "name": "ziggy-dbl",
   "displayName": "Ziggy DBL",
-  "description": "Language support for Synergy DBL (Ziggy implementation)",
-  "version": "0.1.0",
+  "description": "Language support for Synergy DBL (Ziggy implementation) with bytecode compilation",
+  "version": "0.2.0",
   "publisher": "johncotdev",
   "repository": {
     "type": "git",
@@ -15,7 +15,8 @@
     "Programming Languages"
   ],
   "activationEvents": [
-    "onLanguage:dbl"
+    "onLanguage:dbl",
+    "onLanguage:zbc"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -32,6 +33,24 @@
           ".DBL"
         ],
         "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "zbc",
+        "aliases": [
+          "Ziggy Bytecode",
+          "ZBC"
+        ],
+        "extensions": [
+          ".zbc",
+          ".zbl",
+          ".zbx"
+        ]
+      },
+      {
+        "id": "zbc-disasm",
+        "aliases": [
+          "Ziggy Bytecode Disassembly"
+        ]
       }
     ],
     "grammars": [
@@ -39,6 +58,11 @@
         "language": "dbl",
         "scopeName": "source.dbl",
         "path": "./syntaxes/dbl.tmLanguage.json"
+      },
+      {
+        "language": "zbc-disasm",
+        "scopeName": "source.zbc-disasm",
+        "path": "./syntaxes/zbc-disasm.tmLanguage.json"
       }
     ],
     "commands": [
@@ -47,6 +71,30 @@
         "title": "Run DBL File",
         "icon": "$(play)",
         "category": "Ziggy"
+      },
+      {
+        "command": "ziggy.compile",
+        "title": "Compile to Bytecode",
+        "icon": "$(package)",
+        "category": "Ziggy"
+      },
+      {
+        "command": "ziggy.disassemble",
+        "title": "Disassemble Bytecode",
+        "icon": "$(code)",
+        "category": "Ziggy"
+      },
+      {
+        "command": "ziggy.runBytecode",
+        "title": "Run with Bytecode VM",
+        "icon": "$(vm)",
+        "category": "Ziggy"
+      },
+      {
+        "command": "ziggy.compileAndRun",
+        "title": "Compile and Run",
+        "icon": "$(run-all)",
+        "category": "Ziggy"
       }
     ],
     "menus": {
@@ -54,14 +102,61 @@
         {
           "command": "ziggy.run",
           "when": "resourceLangId == dbl",
-          "group": "navigation"
+          "group": "navigation@1"
+        },
+        {
+          "command": "ziggy.runBytecode",
+          "when": "resourceLangId == dbl || resourceLangId == zbc",
+          "group": "navigation@2"
         }
       ],
       "editor/context": [
         {
           "command": "ziggy.run",
           "when": "resourceLangId == dbl",
-          "group": "navigation"
+          "group": "ziggy@1"
+        },
+        {
+          "command": "ziggy.compile",
+          "when": "resourceLangId == dbl",
+          "group": "ziggy@2"
+        },
+        {
+          "command": "ziggy.disassemble",
+          "when": "resourceLangId == dbl || resourceLangId == zbc",
+          "group": "ziggy@3"
+        },
+        {
+          "command": "ziggy.runBytecode",
+          "when": "resourceLangId == dbl || resourceLangId == zbc",
+          "group": "ziggy@4"
+        },
+        {
+          "command": "ziggy.compileAndRun",
+          "when": "resourceLangId == dbl",
+          "group": "ziggy@5"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "ziggy.run",
+          "when": "resourceLangId == dbl"
+        },
+        {
+          "command": "ziggy.compile",
+          "when": "resourceLangId == dbl"
+        },
+        {
+          "command": "ziggy.disassemble",
+          "when": "resourceLangId == dbl || resourceLangId == zbc"
+        },
+        {
+          "command": "ziggy.runBytecode",
+          "when": "resourceLangId == dbl || resourceLangId == zbc"
+        },
+        {
+          "command": "ziggy.compileAndRun",
+          "when": "resourceLangId == dbl"
         }
       ]
     },
@@ -70,6 +165,24 @@
         "command": "ziggy.run",
         "key": "ctrl+shift+r",
         "mac": "cmd+shift+r",
+        "when": "resourceLangId == dbl"
+      },
+      {
+        "command": "ziggy.compile",
+        "key": "ctrl+shift+b",
+        "mac": "cmd+shift+b",
+        "when": "resourceLangId == dbl"
+      },
+      {
+        "command": "ziggy.disassemble",
+        "key": "ctrl+shift+d",
+        "mac": "cmd+shift+d",
+        "when": "resourceLangId == dbl || resourceLangId == zbc"
+      },
+      {
+        "command": "ziggy.compileAndRun",
+        "key": "ctrl+shift+f5",
+        "mac": "cmd+shift+f5",
         "when": "resourceLangId == dbl"
       }
     ],
@@ -85,6 +198,25 @@
           "type": "boolean",
           "default": true,
           "description": "Run DBL programs in the integrated terminal (true) or output panel (false)."
+        },
+        "ziggy.executionMode": {
+          "type": "string",
+          "enum": [
+            "interpreter",
+            "bytecode"
+          ],
+          "default": "interpreter",
+          "description": "Default execution mode: 'interpreter' for tree-walking interpreter, 'bytecode' for compiled bytecode VM."
+        },
+        "ziggy.showDisassemblyOnCompile": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically show bytecode disassembly after compiling."
+        },
+        "ziggy.bytecodeOutputDir": {
+          "type": "string",
+          "default": "",
+          "description": "Directory for compiled bytecode output. Empty uses the source file directory."
         }
       }
     }
