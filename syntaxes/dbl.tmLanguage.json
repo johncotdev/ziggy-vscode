@@ -1,0 +1,163 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "DBL",
+  "scopeName": "source.dbl",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#operators" },
+    { "include": "#keywords" },
+    { "include": "#types" },
+    { "include": "#functions" },
+    { "include": "#variables" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.semicolon.dbl",
+          "match": ";.*$"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.dbl",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.dbl",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.dbl",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "name": "constant.character.escape.dbl",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.decimal.dbl",
+          "match": "\\b\\d+\\.\\d+\\b"
+        },
+        {
+          "name": "constant.numeric.integer.dbl",
+          "match": "\\b\\d+\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.comparison.dbl",
+          "match": "(?i)\\.(eq|ne|lt|le|gt|ge)\\."
+        },
+        {
+          "name": "keyword.operator.logical.dbl",
+          "match": "(?i)\\.(and|or|not|xor)\\."
+        },
+        {
+          "name": "keyword.operator.bitwise.dbl",
+          "match": "(?i)\\.(band|bor|bnot|bxor)\\."
+        },
+        {
+          "name": "keyword.operator.arithmetic.dbl",
+          "match": "[+\\-*/]"
+        },
+        {
+          "name": "keyword.operator.assignment.dbl",
+          "match": "="
+        },
+        {
+          "name": "keyword.operator.comparison.dbl",
+          "match": "==|!=|<=|>=|<|>"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.structure.dbl",
+          "match": "(?i)\\b(record|endrecord|proc|end|main|endmain|subroutine|endsubroutine|function|endfunction|group|endgroup|structure|endstructure|common|endcommon|global|endglobal|literal|endliteral)\\b"
+        },
+        {
+          "name": "keyword.control.flow.dbl",
+          "match": "(?i)\\b(if|then|else|begin|case|endcase|using|endusing|select|default)\\b"
+        },
+        {
+          "name": "keyword.control.loop.dbl",
+          "match": "(?i)\\b(do|until|while|for|from|thru|foreach|in|forever|repeat|exitloop|nextloop)\\b"
+        },
+        {
+          "name": "keyword.control.return.dbl",
+          "match": "(?i)\\b(xcall|xreturn|call|return|freturn|mreturn|goto|stop|exit)\\b"
+        },
+        {
+          "name": "keyword.control.io.dbl",
+          "match": "(?i)\\b(open|close|read|reads|write|writes|store|delete|find|unlock|flush|display|accept|get|gets|put|puts)\\b"
+        },
+        {
+          "name": "keyword.control.data.dbl",
+          "match": "(?i)\\b(clear|init|incr|decr|locase|upcase|data|set)\\b"
+        },
+        {
+          "name": "keyword.control.class.dbl",
+          "match": "(?i)\\b(class|endclass|method|endmethod|property|endproperty|namespace|endnamespace|import|extends|implements|interface|endinterface|delegate|enddelegate|enum|endenum)\\b"
+        },
+        {
+          "name": "keyword.control.modifier.dbl",
+          "match": "(?i)\\b(public|private|protected|internal|static|virtual|override|abstract|sealed|new|this|parent)\\b"
+        },
+        {
+          "name": "keyword.control.exception.dbl",
+          "match": "(?i)\\b(try|catch|finally|endtry|throw|onerror|offerror)\\b"
+        },
+        {
+          "name": "keyword.control.async.dbl",
+          "match": "(?i)\\b(async|await)\\b"
+        }
+      ]
+    },
+    "types": {
+      "patterns": [
+        {
+          "name": "storage.type.dbl",
+          "match": "(?i)\\b(a\\d*|d\\d*(\\.\\d+)?|i[1248]|p\\d*|string|handle|object|void)\\b"
+        },
+        {
+          "name": "storage.type.structure.dbl",
+          "match": "@[a-zA-Z_$][a-zA-Z0-9_$]*"
+        }
+      ]
+    },
+    "functions": {
+      "patterns": [
+        {
+          "name": "support.function.builtin.dbl",
+          "match": "(?i)%[a-zA-Z_][a-zA-Z0-9_]*"
+        }
+      ]
+    },
+    "variables": {
+      "patterns": [
+        {
+          "name": "variable.other.dbl",
+          "match": "\\b[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+        }
+      ]
+    }
+  }
+}

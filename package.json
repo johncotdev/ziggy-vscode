@@ -1,0 +1,103 @@
+{
+  "name": "ziggy-dbl",
+  "displayName": "Ziggy DBL",
+  "description": "Language support for Synergy DBL (Ziggy implementation)",
+  "version": "0.1.0",
+  "publisher": "johncotdev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/johncotdev/ziggy-vscode"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:dbl"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "dbl",
+        "aliases": [
+          "DBL",
+          "Synergy DBL",
+          "Ziggy DBL"
+        ],
+        "extensions": [
+          ".dbl",
+          ".DBL"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "dbl",
+        "scopeName": "source.dbl",
+        "path": "./syntaxes/dbl.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "ziggy.run",
+        "title": "Run DBL File",
+        "icon": "$(play)",
+        "category": "Ziggy"
+      }
+    ],
+    "menus": {
+      "editor/title/run": [
+        {
+          "command": "ziggy.run",
+          "when": "resourceLangId == dbl",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "ziggy.run",
+          "when": "resourceLangId == dbl",
+          "group": "navigation"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "ziggy.run",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r",
+        "when": "resourceLangId == dbl"
+      }
+    ],
+    "configuration": {
+      "title": "Ziggy DBL",
+      "properties": {
+        "ziggy.executablePath": {
+          "type": "string",
+          "default": "ziggy",
+          "description": "Path to the ziggy executable. Use 'ziggy' if installed globally, or specify full path (e.g., /path/to/ziggy or ./zig-out/bin/ziggy)."
+        },
+        "ziggy.runInTerminal": {
+          "type": "boolean",
+          "default": true,
+          "description": "Run DBL programs in the integrated terminal (true) or output panel (false)."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  }
+}

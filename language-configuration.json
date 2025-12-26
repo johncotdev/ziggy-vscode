@@ -1,0 +1,32 @@
+{
+  "comments": {
+    "lineComment": ";"
+  },
+  "brackets": [
+    ["(", ")"],
+    ["[", "]"]
+  ],
+  "autoClosingPairs": [
+    { "open": "(", "close": ")" },
+    { "open": "[", "close": "]" },
+    { "open": "\"", "close": "\"", "notIn": ["string"] },
+    { "open": "'", "close": "'", "notIn": ["string"] }
+  ],
+  "surroundingPairs": [
+    ["(", ")"],
+    ["[", "]"],
+    ["\"", "\""],
+    ["'", "'"]
+  ],
+  "folding": {
+    "markers": {
+      "start": "(?i)^\\s*(record|group|structure|common|global|literal|begin|if|case|using|do|while|for|foreach|class|method|property|namespace|interface|try|subroutine|function|main)\\b",
+      "end": "(?i)^\\s*(endrecord|endgroup|endstructure|endcommon|endglobal|endliteral|end|endcase|endusing|endclass|endmethod|endproperty|endnamespace|endinterface|endtry|endsubroutine|endfunction|endmain)\\b"
+    }
+  },
+  "indentationRules": {
+    "increaseIndentPattern": "(?i)^\\s*(record|group|structure|common|global|literal|begin|if|then|else|case|using|do|while|for|foreach|class|method|property|namespace|interface|try|catch|finally|subroutine|function|main)\\b",
+    "decreaseIndentPattern": "(?i)^\\s*(endrecord|endgroup|endstructure|endcommon|endglobal|endliteral|end|else|endcase|endusing|endclass|endmethod|endproperty|endnamespace|endinterface|endtry|catch|finally|endsubroutine|endfunction|endmain)\\b"
+  },
+  "wordPattern": "[a-zA-Z_$][a-zA-Z0-9_$]*"
+}
