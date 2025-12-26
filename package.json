@@ -1,12 +1,12 @@
 {
-  "name": "ziggy-dbl",
-  "displayName": "Ziggy DBL",
-  "description": "Language support for Synergy DBL (Ziggy implementation) with bytecode compilation",
-  "version": "0.2.0",
+  "name": "zibol",
+  "displayName": "Zibol",
+  "description": "Language support for Zibol (Zig Business Oriented Language) - a free SynergyDE alternative",
+  "version": "0.3.0",
   "publisher": "johncotdev",
   "repository": {
     "type": "git",
-    "url": "https://github.com/johncotdev/ziggy-vscode"
+    "url": "https://codeberg.org/zibol/ziggy-vscode"
   },
   "engines": {
     "vscode": "^1.85.0"
@@ -15,191 +15,196 @@
     "Programming Languages"
   ],
   "activationEvents": [
-    "onLanguage:dbl",
-    "onLanguage:zbc"
+    "onLanguage:zibol"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "languages": [
       {
-        "id": "dbl",
+        "id": "zibol",
         "aliases": [
-          "DBL",
-          "Synergy DBL",
-          "Ziggy DBL"
+          "Zibol",
+          "ZBL",
+          "Zig Business Oriented Language"
         ],
         "extensions": [
-          ".dbl",
-          ".DBL"
-        ],
-        "configuration": "./language-configuration.json"
-      },
-      {
-        "id": "zbc",
-        "aliases": [
-          "Ziggy Bytecode",
-          "ZBC"
-        ],
-        "extensions": [
-          ".zbc",
           ".zbl",
-          ".zbx"
-        ]
+          ".ZBL"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/zibol.png",
+          "dark": "./icons/zibol.png"
+        }
       },
       {
-        "id": "zbc-disasm",
+        "id": "zibol-disasm",
         "aliases": [
-          "Ziggy Bytecode Disassembly"
-        ]
+          "Zibol Bytecode Disassembly"
+        ],
+        "extensions": []
       }
     ],
     "grammars": [
       {
-        "language": "dbl",
-        "scopeName": "source.dbl",
-        "path": "./syntaxes/dbl.tmLanguage.json"
+        "language": "zibol",
+        "scopeName": "source.zibol",
+        "path": "./syntaxes/zibol.tmLanguage.json"
       },
       {
-        "language": "zbc-disasm",
-        "scopeName": "source.zbc-disasm",
-        "path": "./syntaxes/zbc-disasm.tmLanguage.json"
+        "language": "zibol-disasm",
+        "scopeName": "source.zibol-disasm",
+        "path": "./syntaxes/zibol-disasm.tmLanguage.json"
       }
     ],
     "commands": [
       {
-        "command": "ziggy.run",
-        "title": "Run DBL File",
+        "command": "zibol.run",
+        "title": "Run Zibol File",
         "icon": "$(play)",
-        "category": "Ziggy"
+        "category": "Zibol"
       },
       {
-        "command": "ziggy.compile",
-        "title": "Compile to Bytecode",
+        "command": "zibol.compile",
+        "title": "Compile to Bytecode (.zbo)",
         "icon": "$(package)",
-        "category": "Ziggy"
+        "category": "Zibol"
       },
       {
-        "command": "ziggy.disassemble",
+        "command": "zibol.disassemble",
         "title": "Disassemble Bytecode",
         "icon": "$(code)",
-        "category": "Ziggy"
+        "category": "Zibol"
       },
       {
-        "command": "ziggy.runBytecode",
+        "command": "zibol.runBytecode",
         "title": "Run with Bytecode VM",
         "icon": "$(vm)",
-        "category": "Ziggy"
+        "category": "Zibol"
       },
       {
-        "command": "ziggy.compileAndRun",
+        "command": "zibol.compileAndRun",
         "title": "Compile and Run",
         "icon": "$(run-all)",
-        "category": "Ziggy"
+        "category": "Zibol"
+      },
+      {
+        "command": "zibol.restartLsp",
+        "title": "Restart Language Server",
+        "category": "Zibol"
       }
     ],
     "menus": {
       "editor/title/run": [
         {
-          "command": "ziggy.run",
-          "when": "resourceLangId == dbl",
+          "command": "zibol.run",
+          "when": "resourceLangId == zibol",
           "group": "navigation@1"
         },
         {
-          "command": "ziggy.runBytecode",
-          "when": "resourceLangId == dbl || resourceLangId == zbc",
+          "command": "zibol.runBytecode",
+          "when": "resourceLangId == zibol",
           "group": "navigation@2"
         }
       ],
       "editor/context": [
         {
-          "command": "ziggy.run",
-          "when": "resourceLangId == dbl",
-          "group": "ziggy@1"
+          "command": "zibol.run",
+          "when": "resourceLangId == zibol",
+          "group": "zibol@1"
         },
         {
-          "command": "ziggy.compile",
-          "when": "resourceLangId == dbl",
-          "group": "ziggy@2"
+          "command": "zibol.compile",
+          "when": "resourceLangId == zibol",
+          "group": "zibol@2"
         },
         {
-          "command": "ziggy.disassemble",
-          "when": "resourceLangId == dbl || resourceLangId == zbc",
-          "group": "ziggy@3"
+          "command": "zibol.disassemble",
+          "when": "resourceLangId == zibol",
+          "group": "zibol@3"
         },
         {
-          "command": "ziggy.runBytecode",
-          "when": "resourceLangId == dbl || resourceLangId == zbc",
-          "group": "ziggy@4"
+          "command": "zibol.runBytecode",
+          "when": "resourceLangId == zibol",
+          "group": "zibol@4"
         },
         {
-          "command": "ziggy.compileAndRun",
-          "when": "resourceLangId == dbl",
-          "group": "ziggy@5"
+          "command": "zibol.compileAndRun",
+          "when": "resourceLangId == zibol",
+          "group": "zibol@5"
         }
       ],
       "commandPalette": [
         {
-          "command": "ziggy.run",
-          "when": "resourceLangId == dbl"
+          "command": "zibol.run",
+          "when": "resourceLangId == zibol"
         },
         {
-          "command": "ziggy.compile",
-          "when": "resourceLangId == dbl"
+          "command": "zibol.compile",
+          "when": "resourceLangId == zibol"
         },
         {
-          "command": "ziggy.disassemble",
-          "when": "resourceLangId == dbl || resourceLangId == zbc"
+          "command": "zibol.disassemble",
+          "when": "resourceLangId == zibol"
         },
         {
-          "command": "ziggy.runBytecode",
-          "when": "resourceLangId == dbl || resourceLangId == zbc"
+          "command": "zibol.runBytecode",
+          "when": "resourceLangId == zibol"
         },
         {
-          "command": "ziggy.compileAndRun",
-          "when": "resourceLangId == dbl"
+          "command": "zibol.compileAndRun",
+          "when": "resourceLangId == zibol"
+        },
+        {
+          "command": "zibol.restartLsp"
         }
       ]
     },
     "keybindings": [
       {
-        "command": "ziggy.run",
+        "command": "zibol.run",
         "key": "ctrl+shift+r",
         "mac": "cmd+shift+r",
-        "when": "resourceLangId == dbl"
+        "when": "resourceLangId == zibol"
       },
       {
-        "command": "ziggy.compile",
+        "command": "zibol.compile",
         "key": "ctrl+shift+b",
         "mac": "cmd+shift+b",
-        "when": "resourceLangId == dbl"
+        "when": "resourceLangId == zibol"
       },
       {
-        "command": "ziggy.disassemble",
+        "command": "zibol.disassemble",
         "key": "ctrl+shift+d",
         "mac": "cmd+shift+d",
-        "when": "resourceLangId == dbl || resourceLangId == zbc"
+        "when": "resourceLangId == zibol"
       },
       {
-        "command": "ziggy.compileAndRun",
+        "command": "zibol.compileAndRun",
         "key": "ctrl+shift+f5",
         "mac": "cmd+shift+f5",
-        "when": "resourceLangId == dbl"
+        "when": "resourceLangId == zibol"
       }
     ],
     "configuration": {
-      "title": "Ziggy DBL",
+      "title": "Zibol",
       "properties": {
-        "ziggy.executablePath": {
+        "zibol.executablePath": {
           "type": "string",
           "default": "ziggy",
-          "description": "Path to the ziggy executable. Use 'ziggy' if installed globally, or specify full path (e.g., /path/to/ziggy or ./zig-out/bin/ziggy)."
+          "description": "Path to the ziggy executable."
         },
-        "ziggy.runInTerminal": {
+        "zibol.lspPath": {
+          "type": "string",
+          "default": "/Users/johnc/.local/bin/zibol-lsp",
+          "description": "Path to the Zibol Language Server executable."
+        },
+        "zibol.runInTerminal": {
           "type": "boolean",
           "default": true,
-          "description": "Run DBL programs in the integrated terminal (true) or output panel (false)."
+          "description": "Run Zibol programs in the integrated terminal (true) or output panel (false)."
         },
-        "ziggy.executionMode": {
+        "zibol.executionMode": {
           "type": "string",
           "enum": [
             "interpreter",
@@ -208,15 +213,21 @@
           "default": "interpreter",
           "description": "Default execution mode: 'interpreter' for tree-walking interpreter, 'bytecode' for compiled bytecode VM."
         },
-        "ziggy.showDisassemblyOnCompile": {
+        "zibol.showDisassemblyOnCompile": {
           "type": "boolean",
           "default": false,
           "description": "Automatically show bytecode disassembly after compiling."
         },
-        "ziggy.bytecodeOutputDir": {
+        "zibol.bytecodeOutputDir": {
           "type": "string",
           "default": "",
-          "description": "Directory for compiled bytecode output. Empty uses the source file directory."
+          "description": "Directory for compiled bytecode (.zbo) output. Empty uses the source file directory."
+        },
+        "zibol.trace.server": {
+          "type": "string",
+          "enum": ["off", "messages", "verbose"],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the Zibol language server."
         }
       }
     }
@@ -226,6 +237,9 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "lint": "eslint src --ext ts"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",

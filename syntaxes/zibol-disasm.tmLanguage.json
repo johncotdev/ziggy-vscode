@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "Ziggy Bytecode Disassembly",
-  "scopeName": "source.zbc-disasm",
+  "name": "Zibol Bytecode Disassembly",
+  "scopeName": "source.zibol-disasm",
   "patterns": [
     { "include": "#comments" },
     { "include": "#section-headers" },
@@ -16,7 +16,7 @@
     "comments": {
       "patterns": [
         {
-          "name": "comment.line.semicolon.zbc-disasm",
+          "name": "comment.line.semicolon.zibol-disasm",
           "match": ";.*$"
         }
       ]
@@ -24,11 +24,11 @@
     "section-headers": {
       "patterns": [
         {
-          "name": "markup.heading.section.zbc-disasm",
+          "name": "markup.heading.section.zibol-disasm",
           "match": "^;\\s*===.*===\\s*$"
         },
         {
-          "name": "keyword.control.header.zbc-disasm",
+          "name": "keyword.control.header.zibol-disasm",
           "match": "(?i)^;\\s*(Version|Entry Point|Flags|Magic|Source Hash):.*$"
         }
       ]
@@ -36,7 +36,7 @@
     "addresses": {
       "patterns": [
         {
-          "name": "constant.numeric.address.zbc-disasm",
+          "name": "constant.numeric.address.zibol-disasm",
           "match": "^\\s*[0-9a-fA-F]{4}:"
         }
       ]
@@ -44,59 +44,59 @@
     "instructions": {
       "patterns": [
         {
-          "name": "keyword.control.opcode.stack.zbc-disasm",
+          "name": "keyword.control.opcode.stack.zibol-disasm",
           "match": "(?i)\\b(push_i8|push_i16|push_i32|push_i64|push_const|push_null|pop|dup|dup2|swap|rotate)\\b"
         },
         {
-          "name": "keyword.control.opcode.local.zbc-disasm",
+          "name": "keyword.control.opcode.local.zibol-disasm",
           "match": "(?i)\\b(load_local|load_local_0|load_local_1|load_local_2|load_local_3|store_local|store_local_0|store_local_1|store_local_2|store_local_3)\\b"
         },
         {
-          "name": "keyword.control.opcode.global.zbc-disasm",
+          "name": "keyword.control.opcode.global.zibol-disasm",
           "match": "(?i)\\b(load_global|store_global|load_common|store_common)\\b"
         },
         {
-          "name": "keyword.control.opcode.record.zbc-disasm",
-          "match": "(?i)\\b(new_record|load_field|load_field_0|load_field_1|load_field_2|store_field|store_field_0|store_field_1|store_field_2|clear_record|init_record)\\b"
+          "name": "keyword.control.opcode.record.zibol-disasm",
+          "match": "(?i)\\b(new_record|load_field|load_field_0|load_field_1|load_field_2|store_field|store_field_0|store_field_1|store_field_2|clear_record|init_record|load_record_buf|store_record_buf)\\b"
         },
         {
-          "name": "keyword.operator.opcode.arithmetic.zbc-disasm",
+          "name": "keyword.operator.opcode.arithmetic.zibol-disasm",
           "match": "(?i)\\b(add|sub|mul|div|mod|neg|incr|decr|int_div|power|add_dec|sub_dec|mul_dec|div_dec)\\b"
         },
         {
-          "name": "keyword.operator.opcode.comparison.zbc-disasm",
+          "name": "keyword.operator.opcode.comparison.zibol-disasm",
           "match": "(?i)\\b(cmp_eq|cmp_ne|cmp_lt|cmp_le|cmp_gt|cmp_ge|cmp_str_eq|cmp_str_ne|cmp_str_lt|cmp_str_le|cmp_str_gt|cmp_str_ge|log_and|log_or|log_not|log_xor|bit_and|bit_or|bit_not|bit_xor|bit_shl|bit_shr)\\b"
         },
         {
-          "name": "keyword.control.opcode.flow.zbc-disasm",
+          "name": "keyword.control.opcode.flow.zibol-disasm",
           "match": "(?i)\\b(jump|jump_if_true|jump_if_false|jump_wide|loop_start|loop_end|case_start|case_match|case_end)\\b"
         },
         {
-          "name": "keyword.control.opcode.call.zbc-disasm",
+          "name": "keyword.control.opcode.call.zibol-disasm",
           "match": "(?i)\\b(call|call_external|call_method|xcall|ret|ret_value|xreturn|freturn|mreturn)\\b"
         },
         {
-          "name": "keyword.control.opcode.channel.zbc-disasm",
+          "name": "keyword.control.opcode.channel.zibol-disasm",
           "match": "(?i)\\b(ch_open|ch_close|ch_read|ch_reads|ch_write|ch_writes|ch_display|ch_accept|ch_get|ch_gets|ch_put|ch_puts)\\b"
         },
         {
-          "name": "keyword.control.opcode.isam.zbc-disasm",
+          "name": "keyword.control.opcode.isam.zibol-disasm",
           "match": "(?i)\\b(isam_create|isam_open|isam_close|isam_read|isam_reads|isam_write|isam_store|isam_delete|isam_find|isam_rewind|isam_lock|isam_unlock|isam_flush)\\b"
         },
         {
-          "name": "support.function.opcode.string.zbc-disasm",
+          "name": "support.function.opcode.string.zibol-disasm",
           "match": "(?i)\\b(str_concat|str_slice|str_len|str_size|str_trim|str_ltrim|str_atrim|str_upper|str_lower|str_find|str_replace|str_pad|str_format)\\b"
         },
         {
-          "name": "support.function.opcode.convert.zbc-disasm",
+          "name": "support.function.opcode.convert.zibol-disasm",
           "match": "(?i)\\b(to_int|to_dec|to_str|to_alpha|to_packed|widen|narrow|box|unbox)\\b"
         },
         {
-          "name": "support.function.opcode.builtin.zbc-disasm",
+          "name": "support.function.opcode.builtin.zibol-disasm",
           "match": "(?i)\\b(fn_abs|fn_sqrt|fn_sin|fn_cos|fn_tan|fn_log|fn_log10|fn_exp|fn_round|fn_trunc|fn_date|fn_time|fn_size|fn_len|fn_error|fn_mem)\\b"
         },
         {
-          "name": "keyword.control.opcode.extended.zbc-disasm",
+          "name": "keyword.control.opcode.extended.zibol-disasm",
           "match": "(?i)\\b(nop|halt|debug_line|debug_break|assert|throw|try_start|try_end|catch)\\b"
         }
       ]
@@ -104,15 +104,15 @@
     "operands": {
       "patterns": [
         {
-          "name": "variable.parameter.operand.zbc-disasm",
+          "name": "variable.parameter.operand.zibol-disasm",
           "match": "@\\d+"
         },
         {
-          "name": "constant.other.operand.zbc-disasm",
+          "name": "constant.other.operand.zibol-disasm",
           "match": "#\\d+"
         },
         {
-          "name": "variable.other.operand.zbc-disasm",
+          "name": "variable.other.operand.zibol-disasm",
           "match": "argc=\\d+"
         }
       ]
@@ -120,22 +120,22 @@
     "constants": {
       "patterns": [
         {
-          "name": "constant.other.constant-index.zbc-disasm",
+          "name": "constant.other.constant-index.zibol-disasm",
           "match": "\\[\\d{4}\\]"
         },
         {
-          "name": "storage.type.constant-type.zbc-disasm",
+          "name": "storage.type.constant-type.zibol-disasm",
           "match": "(?i)\\b(id|int|dec|str|alpha|rec|rtn)\\("
         }
       ]
     },
     "strings": {
-      "name": "string.quoted.double.zbc-disasm",
+      "name": "string.quoted.double.zibol-disasm",
       "begin": "\"",
       "end": "\"",
       "patterns": [
         {
-          "name": "constant.character.escape.zbc-disasm",
+          "name": "constant.character.escape.zibol-disasm",
           "match": "\\\\."
         }
       ]
@@ -143,15 +143,15 @@
     "numbers": {
       "patterns": [
         {
-          "name": "constant.numeric.hex.zbc-disasm",
+          "name": "constant.numeric.hex.zibol-disasm",
           "match": "\\b0x[0-9a-fA-F]+\\b"
         },
         {
-          "name": "constant.numeric.hex.zbc-disasm",
+          "name": "constant.numeric.hex.zibol-disasm",
           "match": "\\b[0-9a-fA-F]{2}(?:\\s+[0-9a-fA-F]{2})*\\b"
         },
         {
-          "name": "constant.numeric.decimal.zbc-disasm",
+          "name": "constant.numeric.decimal.zibol-disasm",
           "match": "\\b\\d+\\b"
         }
       ]

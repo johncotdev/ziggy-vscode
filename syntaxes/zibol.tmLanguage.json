@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "DBL",
-  "scopeName": "source.dbl",
+  "name": "Zibol",
+  "scopeName": "source.zibol",
   "patterns": [
     { "include": "#comments" },
     { "include": "#strings" },
@@ -16,7 +16,7 @@
     "comments": {
       "patterns": [
         {
-          "name": "comment.line.semicolon.dbl",
+          "name": "comment.line.semicolon.zibol",
           "match": ";.*$"
         }
       ]
@@ -24,23 +24,23 @@
     "strings": {
       "patterns": [
         {
-          "name": "string.quoted.double.dbl",
+          "name": "string.quoted.double.zibol",
           "begin": "\"",
           "end": "\"",
           "patterns": [
             {
-              "name": "constant.character.escape.dbl",
+              "name": "constant.character.escape.zibol",
               "match": "\\\\."
             }
           ]
         },
         {
-          "name": "string.quoted.single.dbl",
+          "name": "string.quoted.single.zibol",
           "begin": "'",
           "end": "'",
           "patterns": [
             {
-              "name": "constant.character.escape.dbl",
+              "name": "constant.character.escape.zibol",
               "match": "\\\\."
             }
           ]
@@ -50,11 +50,11 @@
     "numbers": {
       "patterns": [
         {
-          "name": "constant.numeric.decimal.dbl",
+          "name": "constant.numeric.decimal.zibol",
           "match": "\\b\\d+\\.\\d+\\b"
         },
         {
-          "name": "constant.numeric.integer.dbl",
+          "name": "constant.numeric.integer.zibol",
           "match": "\\b\\d+\\b"
         }
       ]
@@ -62,27 +62,27 @@
     "operators": {
       "patterns": [
         {
-          "name": "keyword.operator.comparison.dbl",
+          "name": "keyword.operator.comparison.zibol",
           "match": "(?i)\\.(eq|ne|lt|le|gt|ge)\\."
         },
         {
-          "name": "keyword.operator.logical.dbl",
+          "name": "keyword.operator.logical.zibol",
           "match": "(?i)\\.(and|or|not|xor)\\."
         },
         {
-          "name": "keyword.operator.bitwise.dbl",
+          "name": "keyword.operator.bitwise.zibol",
           "match": "(?i)\\.(band|bor|bnot|bxor)\\."
         },
         {
-          "name": "keyword.operator.arithmetic.dbl",
+          "name": "keyword.operator.arithmetic.zibol",
           "match": "[+\\-*/]"
         },
         {
-          "name": "keyword.operator.assignment.dbl",
+          "name": "keyword.operator.assignment.zibol",
           "match": "="
         },
         {
-          "name": "keyword.operator.comparison.dbl",
+          "name": "keyword.operator.comparison.zibol",
           "match": "==|!=|<=|>=|<|>"
         }
       ]
@@ -90,43 +90,47 @@
     "keywords": {
       "patterns": [
         {
-          "name": "keyword.control.structure.dbl",
+          "name": "keyword.control.structure.zibol",
           "match": "(?i)\\b(record|endrecord|proc|end|main|endmain|subroutine|endsubroutine|function|endfunction|group|endgroup|structure|endstructure|common|endcommon|global|endglobal|literal|endliteral)\\b"
         },
         {
-          "name": "keyword.control.flow.dbl",
+          "name": "keyword.control.flow.zibol",
           "match": "(?i)\\b(if|then|else|begin|case|endcase|using|endusing|select|default)\\b"
         },
         {
-          "name": "keyword.control.loop.dbl",
+          "name": "keyword.control.loop.zibol",
           "match": "(?i)\\b(do|until|while|for|from|thru|foreach|in|forever|repeat|exitloop|nextloop)\\b"
         },
         {
-          "name": "keyword.control.return.dbl",
+          "name": "keyword.control.return.zibol",
           "match": "(?i)\\b(xcall|xreturn|call|return|freturn|mreturn|goto|stop|exit)\\b"
         },
         {
-          "name": "keyword.control.io.dbl",
+          "name": "keyword.control.io.zibol",
           "match": "(?i)\\b(open|close|read|reads|write|writes|store|delete|find|unlock|flush|display|accept|get|gets|put|puts)\\b"
         },
         {
-          "name": "keyword.control.data.dbl",
+          "name": "keyword.control.io.qualifier.zibol",
+          "match": "(?i)\\b(KEYNUM|LOCK|WAIT|DIRECTION|MATCH|NOREWIND|RFA|GETRFA|POSITION)\\b"
+        },
+        {
+          "name": "keyword.control.data.zibol",
           "match": "(?i)\\b(clear|init|incr|decr|locase|upcase|data|set)\\b"
         },
         {
-          "name": "keyword.control.class.dbl",
+          "name": "keyword.control.class.zibol",
           "match": "(?i)\\b(class|endclass|method|endmethod|property|endproperty|namespace|endnamespace|import|extends|implements|interface|endinterface|delegate|enddelegate|enum|endenum)\\b"
         },
         {
-          "name": "keyword.control.modifier.dbl",
+          "name": "keyword.control.modifier.zibol",
           "match": "(?i)\\b(public|private|protected|internal|static|virtual|override|abstract|sealed|new|this|parent)\\b"
         },
         {
-          "name": "keyword.control.exception.dbl",
+          "name": "keyword.control.exception.zibol",
           "match": "(?i)\\b(try|catch|finally|endtry|throw|onerror|offerror)\\b"
         },
         {
-          "name": "keyword.control.async.dbl",
+          "name": "keyword.control.async.zibol",
           "match": "(?i)\\b(async|await)\\b"
         }
       ]
@@ -134,11 +138,11 @@
     "types": {
       "patterns": [
         {
-          "name": "storage.type.dbl",
+          "name": "storage.type.zibol",
           "match": "(?i)\\b(a\\d*|d\\d*(\\.\\d+)?|i[1248]|p\\d*|string|handle|object|void)\\b"
         },
         {
-          "name": "storage.type.structure.dbl",
+          "name": "storage.type.structure.zibol",
           "match": "@[a-zA-Z_$][a-zA-Z0-9_$]*"
         }
       ]
@@ -146,7 +150,7 @@
     "functions": {
       "patterns": [
         {
-          "name": "support.function.builtin.dbl",
+          "name": "support.function.builtin.zibol",
           "match": "(?i)%[a-zA-Z_][a-zA-Z0-9_]*"
         }
       ]
@@ -154,7 +158,7 @@
     "variables": {
       "patterns": [
         {
-          "name": "variable.other.dbl",
+          "name": "variable.other.zibol",
           "match": "\\b[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
         }
       ]

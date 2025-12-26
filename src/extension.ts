@@ -1,45 +1,105 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { spawn } from 'child_process';
+import {
+    LanguageClient,
+    LanguageClientOptions,
+    ServerOptions,
+    TransportKind
+} from 'vscode-languageclient/node';
 
+let client: LanguageClient | undefined;
 let outputChannel: vscode.OutputChannel;
 let disassemblyChannel: vscode.OutputChannel;
 
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Ziggy DBL extension is now active');
+    console.log('Zibol extension is now active');
 
-    outputChannel = vscode.window.createOutputChannel('Ziggy DBL');
-    disassemblyChannel = vscode.window.createOutputChannel('Ziggy Disassembly');
+    outputChannel = vscode.window.createOutputChannel('Zibol');
+    disassemblyChannel = vscode.window.createOutputChannel('Zibol Disassembly');
+
+    // Start the language server
+    startLanguageServer(context);
 
     // Register commands
-    const runCommand = vscode.commands.registerCommand('ziggy.run', () => runDblFile('interpreter'));
-    const runBytecodeCommand = vscode.commands.registerCommand('ziggy.runBytecode', () => runDblFile('bytecode'));
-    const compileCommand = vscode.commands.registerCommand('ziggy.compile', compileToBytecode);
-    const compileAndRunCommand = vscode.commands.registerCommand('ziggy.compileAndRun', compileAndRun);
-    const disassembleCommand = vscode.commands.registerCommand('ziggy.disassemble', disassembleBytecode);
+    const runCommand = vscode.commands.registerCommand('zibol.run', () => runZibolFile('interpreter'));
+    const runBytecodeCommand = vscode.commands.registerCommand('zibol.runBytecode', () => runZibolFile('bytecode'));
+    const compileCommand = vscode.commands.registerCommand('zibol.compile', compileToBytecode);
+    const compileAndRunCommand = vscode.commands.registerCommand('zibol.compileAndRun', compileAndRun);
+    const disassembleCommand = vscode.commands.registerCommand('zibol.disassemble', disassembleBytecode);
+    const restartLspCommand = vscode.commands.registerCommand('zibol.restartLsp', () => restartLanguageServer(context));
 
     context.subscriptions.push(runCommand);
     context.subscriptions.push(runBytecodeCommand);
     context.subscriptions.push(compileCommand);
     context.subscriptions.push(compileAndRunCommand);
     context.subscriptions.push(disassembleCommand);
+    context.subscriptions.push(restartLspCommand);
     context.subscriptions.push(outputChannel);
     context.subscriptions.push(disassemblyChannel);
 }
 
-async function runDblFile(mode?: 'interpreter' | 'bytecode'): Promise<void> {
+function startLanguageServer(context: vscode.ExtensionContext) {
+    const config = vscode.workspace.getConfiguration('zibol');
+    const lspPath = config.get<string>('lspPath', 'zibol-lsp');
+
+    // Check if LSP server exists
+    const serverOptions: ServerOptions = {
+        run: {
+            command: lspPath,
+            transport: TransportKind.stdio
+        },
+        debug: {
+            command: lspPath,
+            transport: TransportKind.stdio
+        }
+    };
+
+    const clientOptions: LanguageClientOptions = {
+        documentSelector: [{ scheme: 'file', language: 'zibol' }],
+        synchronize: {
+            fileEvents: vscode.workspace.createFileSystemWatcher('**/*.zbl')
+        },
+        outputChannel: outputChannel
+    };
+
+    client = new LanguageClient(
+        'zibol',
+        'Zibol Language Server',
+        serverOptions,
+        clientOptions
+    );
+
+    // Start the client - it will also launch the server
+    client.start().catch((err) => {
+        // Don't show error if server not found - it's optional
+        console.log('Zibol LSP server not available:', err.message);
+        outputChannel.appendLine(`Note: Language server not found at '${lspPath}'. Some features may be limited.`);
+        outputChannel.appendLine('Set zibol.lspPath in settings to enable language features.');
+    });
+}
+
+async function restartLanguageServer(context: vscode.ExtensionContext) {
+    if (client) {
+        await client.stop();
+        client = undefined;
+    }
+    startLanguageServer(context);
+    vscode.window.showInformationMessage('Zibol Language Server restarted');
+}
+
+async function runZibolFile(mode?: 'interpreter' | 'bytecode'): Promise<void> {
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
-        vscode.window.showErrorMessage('No active editor. Open a .dbl file first.');
+        vscode.window.showErrorMessage('No active editor. Open a .zbl file first.');
         return;
     }
 
     const document = editor.document;
-    const langId = document.languageId;
 
-    if (langId !== 'dbl' && langId !== 'zbc') {
-        vscode.window.showErrorMessage('Current file is not a DBL or bytecode file.');
+    if (document.languageId !== 'zibol') {
+        vscode.window.showErrorMessage('Current file is not a Zibol file.');
         return;
     }
 
@@ -49,7 +109,7 @@ async function runDblFile(mode?: 'interpreter' | 'bytecode'): Promise<void> {
     }
 
     const filePath = document.uri.fsPath;
-    const config = vscode.workspace.getConfiguration('ziggy');
+    const config = vscode.workspace.getConfiguration('zibol');
     const executablePath = config.get<string>('executablePath', 'ziggy');
     const runInTerminal = config.get<boolean>('runInTerminal', true);
 
@@ -59,26 +119,21 @@ async function runDblFile(mode?: 'interpreter' | 'bytecode'): Promise<void> {
     // Build command arguments
     const args: string[] = [];
 
-    // Determine how to run based on file type and mode
-    if (langId === 'zbc') {
-        // Running a bytecode file - use 'run' command
-        args.push('run', filePath);
-    } else if (executionMode === 'bytecode') {
-        // Running DBL file in bytecode mode - check if compiled version exists in bin/
+    if (executionMode === 'bytecode') {
+        // Running in bytecode mode - check if compiled version exists
         const fileDir = path.dirname(filePath);
-        const fileName = path.basename(filePath, '.dbl');
-        const config = vscode.workspace.getConfiguration('ziggy');
+        const fileName = path.basename(filePath, '.zbl');
         const outputDir = config.get<string>('bytecodeOutputDir', '');
         const binDir = outputDir || path.join(fileDir, 'bin');
-        const zbcFile = path.join(binDir, `${fileName}.zbc`);
+        const zboFile = path.join(binDir, `${fileName}.zbo`);
 
         // Check if the compiled file exists
         try {
-            await vscode.workspace.fs.stat(vscode.Uri.file(zbcFile));
-            args.push('run', zbcFile);
+            await vscode.workspace.fs.stat(vscode.Uri.file(zboFile));
+            args.push('run', zboFile);
         } catch {
             vscode.window.showWarningMessage(
-                `Compiled bytecode not found at ${zbcFile}. Compile first using Ctrl+Shift+B or run with interpreter.`
+                `Compiled bytecode not found at ${zboFile}. Compile first using Ctrl+Shift+B or run with interpreter.`
             );
             return;
         }
@@ -95,7 +150,7 @@ async function runDblFile(mode?: 'interpreter' | 'bytecode'): Promise<void> {
 }
 
 function runInTerminalMode(executablePath: string, args: string[], filePath: string): void {
-    const terminalName = 'Ziggy DBL';
+    const terminalName = 'Zibol';
 
     // Find or create the terminal
     let terminal = vscode.window.terminals.find(t => t.name === terminalName);
@@ -145,7 +200,7 @@ function runInOutputPanel(executablePath: string, args: string[], filePath: stri
 
     process.on('error', (err: Error) => {
         outputChannel.appendLine(`Error: ${err.message}`);
-        vscode.window.showErrorMessage(`Failed to run Ziggy: ${err.message}. Check the ziggy.executablePath setting.`);
+        vscode.window.showErrorMessage(`Failed to run Ziggy: ${err.message}. Check the zibol.executablePath setting.`);
     });
 }
 
@@ -153,14 +208,14 @@ async function compileToBytecode(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
-        vscode.window.showErrorMessage('No active editor. Open a .dbl file first.');
+        vscode.window.showErrorMessage('No active editor. Open a .zbl file first.');
         return;
     }
 
     const document = editor.document;
 
-    if (document.languageId !== 'dbl') {
-        vscode.window.showErrorMessage('Current file is not a DBL file.');
+    if (document.languageId !== 'zibol') {
+        vscode.window.showErrorMessage('Current file is not a Zibol file.');
         return;
     }
 
@@ -170,16 +225,16 @@ async function compileToBytecode(): Promise<void> {
     }
 
     const filePath = document.uri.fsPath;
-    const config = vscode.workspace.getConfiguration('ziggy');
+    const config = vscode.workspace.getConfiguration('zibol');
     const executablePath = config.get<string>('executablePath', 'ziggy');
     const outputDir = config.get<string>('bytecodeOutputDir', '');
     const showDisassembly = config.get<boolean>('showDisassemblyOnCompile', false);
 
     const fileDir = path.dirname(filePath);
-    const fileName = path.basename(filePath, '.dbl');
+    const fileName = path.basename(filePath, '.zbl');
     // Default to bin/ subfolder if no output directory specified
     const targetDir = outputDir || path.join(fileDir, 'bin');
-    const outputFile = path.join(targetDir, `${fileName}.zbc`);
+    const outputFile = path.join(targetDir, `${fileName}.zbo`);
 
     outputChannel.clear();
     outputChannel.show();
@@ -217,14 +272,14 @@ async function compileToBytecode(): Promise<void> {
         } else {
             outputChannel.appendLine(`Compilation failed with code ${code}.`);
             if (!hasError) {
-                vscode.window.showErrorMessage('Compilation failed. The compile command may not be available in this version of Ziggy.');
+                vscode.window.showErrorMessage('Compilation failed.');
             }
         }
     });
 
     process.on('error', (err: Error) => {
         outputChannel.appendLine(`Error: ${err.message}`);
-        vscode.window.showErrorMessage(`Failed to compile: ${err.message}. Check the ziggy.executablePath setting.`);
+        vscode.window.showErrorMessage(`Failed to compile: ${err.message}. Check the zibol.executablePath setting.`);
     });
 }
 
@@ -232,14 +287,14 @@ async function compileAndRun(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
-        vscode.window.showErrorMessage('No active editor. Open a .dbl file first.');
+        vscode.window.showErrorMessage('No active editor. Open a .zbl file first.');
         return;
     }
 
     const document = editor.document;
 
-    if (document.languageId !== 'dbl') {
-        vscode.window.showErrorMessage('Current file is not a DBL file.');
+    if (document.languageId !== 'zibol') {
+        vscode.window.showErrorMessage('Current file is not a Zibol file.');
         return;
     }
 
@@ -249,15 +304,15 @@ async function compileAndRun(): Promise<void> {
     }
 
     const filePath = document.uri.fsPath;
-    const config = vscode.workspace.getConfiguration('ziggy');
+    const config = vscode.workspace.getConfiguration('zibol');
     const executablePath = config.get<string>('executablePath', 'ziggy');
     const outputDir = config.get<string>('bytecodeOutputDir', '');
     const runInTerminal = config.get<boolean>('runInTerminal', true);
 
     const fileDir = path.dirname(filePath);
-    const fileName = path.basename(filePath, '.dbl');
+    const fileName = path.basename(filePath, '.zbl');
     const targetDir = outputDir || path.join(fileDir, 'bin');
-    const outputFile = path.join(targetDir, `${fileName}.zbc`);
+    const outputFile = path.join(targetDir, `${fileName}.zbo`);
 
     outputChannel.clear();
     outputChannel.show();
@@ -306,7 +361,7 @@ async function compileAndRun(): Promise<void> {
 
     compileProcess.on('error', (err: Error) => {
         outputChannel.appendLine(`Error: ${err.message}`);
-        vscode.window.showErrorMessage(`Failed to compile: ${err.message}. Check the ziggy.executablePath setting.`);
+        vscode.window.showErrorMessage(`Failed to compile: ${err.message}. Check the zibol.executablePath setting.`);
     });
 }
 
@@ -314,15 +369,14 @@ async function disassembleBytecode(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
-        vscode.window.showErrorMessage('No active editor. Open a .dbl or .zbc file first.');
+        vscode.window.showErrorMessage('No active editor. Open a .zbl file first.');
         return;
     }
 
     const document = editor.document;
-    const langId = document.languageId;
 
-    if (langId !== 'dbl' && langId !== 'zbc') {
-        vscode.window.showErrorMessage('Current file is not a DBL or bytecode file.');
+    if (document.languageId !== 'zibol') {
+        vscode.window.showErrorMessage('Current file is not a Zibol file.');
         return;
     }
 
@@ -332,14 +386,11 @@ async function disassembleBytecode(): Promise<void> {
     }
 
     const filePath = document.uri.fsPath;
-
-    // If it's a .dbl file, we need to compile first (or use disasm on source)
-    // If it's a .zbc file, we can disassemble directly
     await showDisassemblyForFile(filePath);
 }
 
 async function showDisassemblyForFile(filePath: string): Promise<void> {
-    const config = vscode.workspace.getConfiguration('ziggy');
+    const config = vscode.workspace.getConfiguration('zibol');
     const executablePath = config.get<string>('executablePath', 'ziggy');
     const fileDir = path.dirname(filePath);
 
@@ -370,44 +421,30 @@ async function showDisassemblyForFile(filePath: string): Promise<void> {
             // Create a new untitled document with the disassembly
             const doc = await vscode.workspace.openTextDocument({
                 content: output,
-                language: 'zbc-disasm'
+                language: 'zibol-disasm'
             });
             await vscode.window.showTextDocument(doc, { preview: true, viewColumn: vscode.ViewColumn.Beside });
         } else if (code !== 0) {
             disassemblyChannel.appendLine('; ---');
             disassemblyChannel.appendLine(`; Disassembly failed with code ${code}.`);
-            disassemblyChannel.appendLine('; The disasm command may not be available in this version of Ziggy.');
-
-            // Show a more user-friendly message
-            vscode.window.showWarningMessage(
-                'Disassembly command not available. This feature requires Ziggy CLI with bytecode support.',
-                'View Tech Docs'
-            ).then(async selection => {
-                if (selection === 'View Tech Docs') {
-                    // Open the tech-docs if available
-                    const techDocsPath = path.join(path.dirname(filePath), '..', 'ziggy', 'tech-docs', 'bytecode.md');
-                    try {
-                        const doc = await vscode.workspace.openTextDocument(techDocsPath);
-                        await vscode.window.showTextDocument(doc);
-                    } catch {
-                        vscode.window.showInformationMessage('Tech docs not found. See ~/ziggy/tech-docs/ for bytecode documentation.');
-                    }
-                }
-            });
         }
     });
 
     process.on('error', (err: Error) => {
         disassemblyChannel.appendLine(`; Error: ${err.message}`);
-        vscode.window.showErrorMessage(`Failed to disassemble: ${err.message}. Check the ziggy.executablePath setting.`);
+        vscode.window.showErrorMessage(`Failed to disassemble: ${err.message}. Check the zibol.executablePath setting.`);
     });
 }
 
-export function deactivate() {
+export function deactivate(): Thenable<void> | undefined {
+    if (client) {
+        return client.stop();
+    }
     if (outputChannel) {
         outputChannel.dispose();
     }
     if (disassemblyChannel) {
         disassemblyChannel.dispose();
     }
+    return undefined;
 }
