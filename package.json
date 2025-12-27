@@ -1,8 +1,8 @@
 {
   "name": "zibol",
   "displayName": "Zibol",
-  "description": "Language support for Zibol (Zig Business Oriented Language) - a free SynergyDE alternative",
-  "version": "0.3.0",
+  "description": "Language support for Zibol (Zig Business Oriented Language) - a free SynergyDE alternative with Next.js-style framework",
+  "version": "0.6.1",
   "publisher": "johncotdev",
   "repository": {
     "type": "git",
@@ -15,7 +15,12 @@
     "Programming Languages"
   ],
   "activationEvents": [
-    "onLanguage:zibol"
+    "onLanguage:zibol",
+    "workspaceContains:**/zibol.json",
+    "onCommand:zibol.buildWorkspace",
+    "onCommand:zibol.runApp",
+    "onCommand:zibol.init",
+    "onCommand:zibol.dev"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -92,6 +97,42 @@
         "command": "zibol.restartLsp",
         "title": "Restart Language Server",
         "category": "Zibol"
+      },
+      {
+        "command": "zibol.init",
+        "title": "Initialize Workspace",
+        "icon": "$(folder-library)",
+        "category": "Zibol"
+      },
+      {
+        "command": "zibol.new",
+        "title": "New App/Package",
+        "icon": "$(new-folder)",
+        "category": "Zibol"
+      },
+      {
+        "command": "zibol.buildWorkspace",
+        "title": "Build Workspace",
+        "icon": "$(package)",
+        "category": "Zibol"
+      },
+      {
+        "command": "zibol.dev",
+        "title": "Start Dev Server",
+        "icon": "$(server-process)",
+        "category": "Zibol"
+      },
+      {
+        "command": "zibol.stopDev",
+        "title": "Stop Dev Server",
+        "icon": "$(debug-stop)",
+        "category": "Zibol"
+      },
+      {
+        "command": "zibol.runApp",
+        "title": "Run App",
+        "icon": "$(run)",
+        "category": "Zibol"
       }
     ],
     "menus": {
@@ -157,6 +198,24 @@
         },
         {
           "command": "zibol.restartLsp"
+        },
+        {
+          "command": "zibol.init"
+        },
+        {
+          "command": "zibol.new"
+        },
+        {
+          "command": "zibol.buildWorkspace"
+        },
+        {
+          "command": "zibol.dev"
+        },
+        {
+          "command": "zibol.stopDev"
+        },
+        {
+          "command": "zibol.runApp"
         }
       ]
     },
@@ -184,6 +243,27 @@
         "key": "ctrl+shift+f5",
         "mac": "cmd+shift+f5",
         "when": "resourceLangId == zibol"
+      },
+      {
+        "command": "zibol.dev",
+        "key": "ctrl+shift+s",
+        "mac": "cmd+shift+s"
+      },
+      {
+        "command": "zibol.buildWorkspace",
+        "key": "ctrl+shift+alt+b",
+        "mac": "cmd+shift+alt+b"
+      },
+      {
+        "command": "zibol.runApp",
+        "key": "ctrl+shift+f6",
+        "mac": "cmd+shift+f6"
+      }
+    ],
+    "jsonValidation": [
+      {
+        "fileMatch": "zibol.json",
+        "url": "./schemas/zibol.schema.json"
       }
     ],
     "configuration": {
@@ -191,7 +271,7 @@
       "properties": {
         "zibol.executablePath": {
           "type": "string",
-          "default": "ziggy",
+          "default": "/Users/johnc/.local/bin/ziggy",
           "description": "Path to the ziggy executable."
         },
         "zibol.lspPath": {
@@ -225,7 +305,11 @@
         },
         "zibol.trace.server": {
           "type": "string",
-          "enum": ["off", "messages", "verbose"],
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
           "default": "off",
           "description": "Traces the communication between VS Code and the Zibol language server."
         }
@@ -233,9 +317,11 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "watch": "npm run esbuild-base -- --sourcemap --watch",
     "lint": "eslint src --ext ts"
   },
   "dependencies": {
@@ -244,6 +330,7 @@
   "devDependencies": {
     "@types/node": "^20.10.0",
     "@types/vscode": "^1.85.0",
+    "esbuild": "^0.27.2",
     "typescript": "^5.3.0"
   }
 }

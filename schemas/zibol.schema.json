@@ -1,0 +1,227 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://zibol.dev/schemas/zibol.schema.json",
+  "title": "Zibol Configuration",
+  "description": "Configuration file for Zibol workspaces and projects",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the workspace, app, or package",
+      "pattern": "^[@a-z0-9-_/]+$"
+    },
+    "version": {
+      "type": "string",
+      "description": "Semantic version of the project",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?$"
+    },
+    "private": {
+      "type": "boolean",
+      "description": "Mark as private to prevent publishing",
+      "default": true
+    },
+    "type": {
+      "type": "string",
+      "enum": ["app", "library", "workspace"],
+      "description": "The type of project"
+    },
+    "main": {
+      "type": "string",
+      "description": "Main entry point file (e.g., 'main.zbl')"
+    },
+    "workspaces": {
+      "type": "array",
+      "description": "Glob patterns for workspace member directories",
+      "items": {
+        "type": "string"
+      },
+      "examples": [["apps/*", "packages/*"]]
+    },
+    "dependencies": {
+      "type": "object",
+      "description": "Workspace package dependencies",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "ziggy": {
+      "type": "object",
+      "description": "Ziggy runtime configuration",
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Required Ziggy version"
+        }
+      }
+    },
+    "screens": {
+      "type": "object",
+      "description": "Screen discovery configuration",
+      "properties": {
+        "autoDiscover": {
+          "type": "boolean",
+          "description": "Automatically discover screens from directory",
+          "default": true
+        },
+        "directory": {
+          "type": "string",
+          "description": "Directory containing screen files",
+          "default": "screens"
+        }
+      }
+    },
+    "reports": {
+      "type": "object",
+      "description": "Report discovery configuration",
+      "properties": {
+        "autoDiscover": {
+          "type": "boolean",
+          "description": "Automatically discover reports from directory",
+          "default": true
+        },
+        "directory": {
+          "type": "string",
+          "description": "Directory containing report files",
+          "default": "reports"
+        }
+      }
+    },
+    "jobs": {
+      "type": "object",
+      "description": "Job discovery configuration",
+      "properties": {
+        "autoDiscover": {
+          "type": "boolean",
+          "description": "Automatically discover jobs from directory",
+          "default": true
+        },
+        "directory": {
+          "type": "string",
+          "description": "Directory containing job files",
+          "default": "jobs"
+        }
+      }
+    },
+    "api": {
+      "type": "object",
+      "description": "API route discovery configuration",
+      "properties": {
+        "autoDiscover": {
+          "type": "boolean",
+          "description": "Automatically discover API routes from directory",
+          "default": true
+        },
+        "directory": {
+          "type": "string",
+          "description": "Directory containing API route files",
+          "default": "api"
+        }
+      }
+    },
+    "build": {
+      "type": "object",
+      "description": "Build configuration",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output directory for compiled files",
+          "default": "bin"
+        },
+        "target": {
+          "type": "string",
+          "enum": ["bytecode", "native"],
+          "description": "Build target",
+          "default": "bytecode"
+        },
+        "bundle": {
+          "type": "boolean",
+          "description": "Bundle all subroutines into single executable",
+          "default": true
+        },
+        "include": {
+          "type": "array",
+          "description": "Additional directories to include in build",
+          "items": {
+            "type": "string"
+          },
+          "default": ["subroutines", "records"]
+        },
+        "exclude": {
+          "type": "array",
+          "description": "Patterns to exclude from build",
+          "items": {
+            "type": "string"
+          }
+        },
+        "generateManifest": {
+          "type": "boolean",
+          "description": "Generate build manifest with module list",
+          "default": true
+        }
+      }
+    },
+    "link": {
+      "type": "object",
+      "description": "Linking configuration for dependencies",
+      "properties": {
+        "static": {
+          "type": "boolean",
+          "description": "Statically link all dependencies into executable",
+          "default": true
+        },
+        "packages": {
+          "type": "array",
+          "description": "Additional package paths to link",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "exports": {
+      "type": "object",
+      "description": "Package exports mapping",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "examples": [
+        {
+          "./customer": "./src/customer.zbl",
+          "./utils": "./src/utils.zbl"
+        }
+      ]
+    },
+    "dev": {
+      "type": "object",
+      "description": "Development server configuration",
+      "properties": {
+        "port": {
+          "type": "integer",
+          "description": "Dev server port",
+          "default": 3000,
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "host": {
+          "type": "string",
+          "description": "Dev server host",
+          "default": "127.0.0.1"
+        },
+        "hotReload": {
+          "type": "boolean",
+          "description": "Enable hot reload",
+          "default": true
+        }
+      }
+    }
+  },
+  "required": ["name"],
+  "if": {
+    "properties": {
+      "type": { "const": "workspace" }
+    }
+  },
+  "then": {
+    "required": ["name", "workspaces"]
+  }
+}
